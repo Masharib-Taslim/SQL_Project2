@@ -1,0 +1,165 @@
+/*
+In this project, career choices of alumni of two Universities will be analyzed with respect to their passing year as well as the course they completed. 
+
+Dataset: Six .csv file (Alumni record of College A and College B) Higher Studies, Self Employed and Service/Job record 
+
+College_A_HS ~ Higher Studies Record of College A
+College_A_SE ~ Self Employed Record of College A
+College_A_SJ ~ Service/Job Record of College A
+College_B_HS ~ Higher Studies Record of College B
+College_B_SE ~ Higher Studies Record of College B
+College_B_SJ ~ Higher Studies Record of College B
+Tasks to be performed
+
+1. Create new schema as alumni
+2. Import all .csv files into MySQL
+3. Run SQL command to see the structure of six tables
+4. Perform data cleaning on table College_A_HS and store cleaned data in view College_A_HS_V, Remove null values. 
+5. Perform data cleaning on table College_A_SE and store cleaned data in view College_A_SE_V, Remove null values.
+6. Perform data cleaning on table College_A_SJ and store cleaned data in view College_A_SJ_V, Remove null values.
+7. Perform data cleaning on table College_B_HS and store cleaned data in view College_B_HS_V, Remove null values.
+8. Perform data cleaning on table College_B_SE and store cleaned data in view College_B_SE_V, Remove null values.
+9. Perform data cleaning on table College_B_SJ and store cleaned data in view College_B_SJ_V, Remove null values.
+10. Make procedure to use string function/s for converting record of Name, FatherName, MotherName into lower case for views (College_A_HS_V, College_A_SE_V, College_A_SJ_V, College_B_HS_V, College_B_SE_V, College_B_SJ_V) 
+11. Calculate the percentage of career choice of College A and College B Alumni
+(w.r.t Higher Studies, Self Employed and Service/Job)
+*/
+
+-- Task:1
+CREATE DATABASE alumni;
+USE alumni;
+
+-- Task:2
+-- all csv files imported
+
+-- Task:3
+DESC college_a_hs;
+DESC college_a_se;
+DESC college_a_sj;
+DESC college_b_hs;
+DESC college_b_se;
+DESC college_b_sj;
+
+-- Task:4
+CREATE VIEW College_A_HS_V AS 
+SELECT * FROM college_a_hs WHERE 
+RollNo IS NOT NULL AND 
+MotherName IS NOT NULL AND 
+EntranceExam IS NOT NULL AND
+HSDegree IS NOT NULL AND 
+Institute IS NOT NULL AND
+Location IS NOT NULL;
+
+-- Task:5
+CREATE VIEW College_A_SE_V AS 
+SELECT * FROM college_a_se WHERE
+RollNo IS NOT NULL AND 
+MotherName IS NOT NULL AND 
+Organization IS NOT NULL AND 
+Location IS NOT NULL; 
+
+-- Task:6
+CREATE VIEW College_A_SJ_V AS 
+SELECT * FROM college_a_sj WHERE
+RollNo IS NOT NULL AND 
+FatherName IS NOT NULL AND 
+MotherName IS NOT NULL AND 
+Organization IS NOT NULL AND 
+Designation IS NOT NULL AND
+Location IS NOT NULL; 
+
+-- Task:7
+CREATE VIEW College_B_HS_V AS 
+SELECT * FROM college_b_hs WHERE
+RollNo IS NOT NULL AND 
+HSDegree IS NOT NULL AND 
+EntranceExam IS NOT NULL AND 
+Institute IS NOT NULL;
+
+-- Task:8
+CREATE VIEW College_B_SE_V AS 
+SELECT * FROM college_b_se WHERE
+RollNo IS NOT NULL AND 
+MotherName IS NOT NULL AND 
+Organization IS NOT NULL;
+
+-- Task:9
+CREATE VIEW College_B_SJ_V AS 
+SELECT * FROM college_b_sj WHERE
+RollNo IS NOT NULL AND 
+Designation IS NOT NULL;
+
+-- Task:10
+DELIMITER $$
+CREATE PROCEDURE lowercase_a1()
+BEGIN
+SELECT lower(Name),lower(FatherName),lower(MotherNmae) FROM College_A_HS_V;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE lowercase_a2()
+BEGIN
+SELECT lower(Name),lower(FatherName),lower(MotherNmae) FROM College_A_SE_V;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE lowercase_a3()
+BEGIN
+SELECT lower(Name),lower(FatherName),lower(MotherNmae) FROM College_A_SJ_V;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE lowercase_b1()
+BEGIN
+SELECT lower(Name),lower(FatherName),lower(MotherNmae) FROM College_B_HS_V;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE lowercase_b2()
+BEGIN
+SELECT lower(Name),lower(FatherName),lower(MotherNmae) FROM College_B_SE_V;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE lowercase_b3()
+BEGIN
+SELECT lower(Name),lower(FatherName),lower(MotherNmae) FROM College_B_SJ_V;
+END $$
+DELIMITER ;
+
+-- Task:11
+
+select count(*) from college_a_hs;
+-- 1157
+select count(*) from college_a_se;
+-- 724
+select count(*) from college_a_sj;
+-- 4006
+-- total sum
+-- 5887
+
+select count(*) from college_b_hs;
+-- 199
+select count(*) from college_b_se;
+-- 201
+select count(*) from college_b_sj;
+-- 1859
+-- total sum
+-- 2259
+
+SELECT 'Higher Studies',(SELECT COUNT(*) / 5887 * 100 FROM college_a_hs)'College A Percentage',
+(SELECT COUNT(*) / 2259 * 100 FROM college_b_hs) 'College B Percentage'
+UNION
+SELECT 'Self Employed',(SELECT COUNT(*) / 5887 * 100 FROM college_a_se)'College A Percentage',
+(SELECT COUNT(*) / 2259 * 100 FROM college_b_se) 'College B Percentage'
+UNION
+SELECT 'Service Job',(SELECT COUNT(*) / 5887 * 100 FROM college_a_sj)'College A Percentage',
+(SELECT COUNT(*) / 2259 * 100 FROM college_b_sj) 'College B Percentage';
+
+
+
